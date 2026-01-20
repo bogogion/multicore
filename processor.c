@@ -1,6 +1,6 @@
 #define _GNU_SOURCE
-#include "config.h"
-#include "multi.h"
+#include "src/config.h"
+#include "src/multi.h"
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -13,7 +13,6 @@
 
 
 int run = 1;
-uint8_t *control_byte;
 
 void sigHandler(int useless){ run = 0; }
 
@@ -21,7 +20,6 @@ void mainloop(mc_ctrl_struct *control, int core_id)
 {
 	/* do what u want here */
 	printf("[core %i] Hello world!\n",core_id);
-	run = 0;
 }
 
 int main(int argc, char *argv[])
@@ -54,10 +52,9 @@ int main(int argc, char *argv[])
 	}
 
 	/* setup core specific stuff */
-	control_byte = control->processor_control + core_id;
-	printf("%p %p",control_byte,control->processor_control);
-
-	//control->pids[core_id] = getpid();
+	
+	control->processor_control[core_id] = (uint8_t)MULTICORE_PROCESSOR_ONLINE;
+	control->pids[core_id] = getpid();
 
 	#ifdef HARDCORE
 	/* for hardcore mode we restrict each process to an individual core */
@@ -67,8 +64,6 @@ int main(int argc, char *argv[])
 	sched_setaffinity(0, sizeof(cpu_set_t), &set);
 	#endif
 
-	signal(SIGTERM, sigHandler);
-	*control_byte = (uint8_t)MULTICORE_PROCESSOR_ONLINE;
 	while(run)
 	{
 		mainloop(control,core_id);

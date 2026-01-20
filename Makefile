@@ -1,2 +1,13 @@
+CC                  = gcc
+CODE_DEPENDENCIES   = src/*.h src/*.c
+PROCESSOR_SOURCE    = processor.c
+TEST_SOURCE         = test.c
+TARGET              = processor 
+TEST_TARGET         = test
+
 all:
-	gcc config.h main.c multi.* sys_info.* -o main && gcc config.h multi.* processor.c -o processor
+	$(CC) $(CODE_DEPENDENCIES) $(PROCESSOR_SOURCE) -o $(TARGET)
+test:
+	$(CC) $(CODE_DEPENDENCIES) $(TEST_SOURCE) -o $(TEST_TARGET)
+clean:
+	rm $(TARGET) && rm $(TEST_TARGET)
