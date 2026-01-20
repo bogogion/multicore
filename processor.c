@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 	if(argc != 4)
 	{
 		printf("[multicore] Processor not given enough arguments.\n");
-		return 1;
+		return -1;
 	}
 	
 	int core_id = atoi(argv[1]);
@@ -37,9 +37,8 @@ int main(int argc, char *argv[])
 
 	if(sfd < 0)
 	{ 
-		printf("[multicore] Issue with shm...\n");
-		perror("shm");
-		return 1;
+		perror("[multicore] shm_open processor");
+		return -1;
 	}
 
 
@@ -47,8 +46,8 @@ int main(int argc, char *argv[])
 
 	if(control == NULL)
 	{
-		printf("[multicore] mmap failure...\n");
-		return 1;
+		perror("[multicore] mmap processor");
+		return -1;
 	}
 
 	/* setup core specific stuff */
@@ -71,7 +70,7 @@ int main(int argc, char *argv[])
 
 	munmap(control,(size_t)atoi(argv[3]));
 
-	//shm_unlink(argv[2]);
+	shm_unlink(argv[2]);
 	return 0;
 }
 
